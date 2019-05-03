@@ -1,39 +1,34 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using CinemaExpress.Web.Data;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using CinemaExpress.Web.Data;
+using System.Threading.Tasks;
 
 namespace CinemaExpress.Web.Controllers
 {
     public class MoviesController : Controller
     {
-        private readonly DataContext _context;
+        private readonly IRepository repository;
 
-        public MoviesController(DataContext context)
+        public MoviesController(IRepository repository)
         {
-            _context = context;
+            this.repository = repository;
         }
 
         // GET: Movies
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            return View(await _context.Movies.ToListAsync());
+            return View(this.repository.GetMovies());
         }
 
         // GET: Movies/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public IActionResult Details(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var movie = await _context.Movies
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var movie = this.repository.GetMovie(id.Value);
             if (movie == null)
             {
                 return NotFound();
@@ -48,31 +43,29 @@ namespace CinemaExpress.Web.Controllers
             return View();
         }
 
-        // POST: Movies/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // POST: Movies/Create        
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,ImageUrl,Título,TítuloOriginal,VideoUrl,Año,Reparto,Géneros,Idioma,Calidad,Sinópsis,TrailerUrl,LastSale,IsAvailabe,Precio")] Movie movie)
+        public async Task<IActionResult> Create(Movie movie)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(movie);
-                await _context.SaveChangesAsync();
+                this.repository.AddMovie(movie);
+                await this.repository.SaveAllAsync();
                 return RedirectToAction(nameof(Index));
             }
             return View(movie);
         }
 
         // GET: Movies/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public IActionResult Edit(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var movie = await _context.Movies.FindAsync(id);
+            var movie = this.repository.GetMovie(id.Value);
             if (movie == null)
             {
                 return NotFound();
@@ -81,27 +74,20 @@ namespace CinemaExpress.Web.Controllers
         }
 
         // POST: Movies/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,ImageUrl,Título,TítuloOriginal,VideoUrl,Año,Reparto,Géneros,Idioma,Calidad,Sinópsis,TrailerUrl,LastSale,IsAvailabe,Precio")] Movie movie)
+        public async Task<IActionResult> Edit(Movie movie)
         {
-            if (id != movie.Id)
-            {
-                return NotFound();
-            }
-
             if (ModelState.IsValid)
             {
                 try
                 {
-                    _context.Update(movie);
-                    await _context.SaveChangesAsync();
+                    this.repository.UpdateMovie(movie);
+                    await this.repository.SaveAllAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!MovieExists(movie.Id))
+                    if (!this.repository.MovieExists(movie.Id))
                     {
                         return NotFound();
                     }
@@ -116,15 +102,14 @@ namespace CinemaExpress.Web.Controllers
         }
 
         // GET: Movies/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public IActionResult Delete(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var movie = await _context.Movies
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var movie = this.repository.GetMovie(id.Value);                
             if (movie == null)
             {
                 return NotFound();
@@ -138,15 +123,11 @@ namespace CinemaExpress.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var movie = await _context.Movies.FindAsync(id);
-            _context.Movies.Remove(movie);
-            await _context.SaveChangesAsync();
+            var movie = this.repository.GetMovie(id);
+            this.repository.RemoveMovie(movie);
+            await this.repository.SaveAllAsync();
             return RedirectToAction(nameof(Index));
         }
-
-        private bool MovieExists(int id)
-        {
-            return _context.Movies.Any(e => e.Id == id);
-        }
+               
     }
 }
