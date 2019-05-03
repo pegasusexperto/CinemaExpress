@@ -5,13 +5,16 @@ public class Movie
 {
     public int Id { get; set; }
 
+    
     [Required]
     [Display(Name = "Portada")]
     public string ImageUrl { get; set; }
 
+    [MaxLength(50)]
     [Required]
     public string Título { get; set; }
 
+    [MaxLength(50)]
     [Required]
     [Display(Name = "Título Original")]    
     public string TítuloOriginal { get; set; }
@@ -20,6 +23,7 @@ public class Movie
     [Display(Name = "Video")]
     public string VideoUrl { get; set; }
 
+    [MaxLength(4)]
     [Required]
     public string Año { get; set; }
 
@@ -29,9 +33,11 @@ public class Movie
     [Required]
     public string Géneros { get; set; }
 
+    [MaxLength(20)]
     [Required]
     public string Idioma { get; set; }
 
+    [MaxLength(20)]
     [Required]
     public string Calidad { get; set; }
 
