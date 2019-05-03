@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CinemaExpress.Web.Data.Entities;
+using System;
 using System.ComponentModel.DataAnnotations;
 
 public class Movie
@@ -55,6 +56,8 @@ public class Movie
 
     [DisplayFormat(DataFormatString = "{0:C2}", ApplyFormatInEditMode = false)]
     public decimal Precio { get; set; }
+
+    public User User { get; set; } 
    
 }
 
