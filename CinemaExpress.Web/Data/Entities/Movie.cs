@@ -23,8 +23,7 @@ public class Movie
     [Display(Name = "Video")]
     public string VideoUrl { get; set; }
 
-    [MaxLength(4)]
-    [Required]
+    [MaxLength(4)]    
     public string Año { get; set; }
 
     [Required]
