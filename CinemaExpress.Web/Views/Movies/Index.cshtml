@@ -1,0 +1,113 @@
+﻿@model IEnumerable<Movie>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h2>Index</h2>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.ImageUrl)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Título)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TítuloOriginal)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.VideoUrl)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Año)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Reparto)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Géneros)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Idioma)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Calidad)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Sinópsis)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TrailerUrl)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LastSale)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IsAvailabe)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Precio)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.ImageUrl)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Título)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TítuloOriginal)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.VideoUrl)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Año)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Reparto)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Géneros)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Idioma)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Calidad)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Sinópsis)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TrailerUrl)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LastSale)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IsAvailabe)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Precio)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
