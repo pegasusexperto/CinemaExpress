@@ -1,133 +1,139 @@
 ﻿using CinemaExpress.Web.Data;
+using CinemaExpress.Web.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 
-namespace CinemaExpress.Web.Controllers
+public class MoviesController : Controller
 {
-    public class MoviesController : Controller
+    private readonly IMovieRepository movieRepository;
+
+    private readonly IUserHelper userHelper;
+
+    public MoviesController(IMovieRepository movieRepository, IUserHelper userHelper)
     {
-        private readonly IRepository repository;
+        this.movieRepository = movieRepository;
+        this.userHelper = userHelper;
+    }
 
-        public MoviesController(IRepository repository)
+    // GET: Movies
+    public IActionResult Index()
+    {
+        return View(this.movieRepository.GetAll());
+    }
+
+    // GET: Movies/Details/5
+    public async Task<IActionResult> Details(int? id)
+    {
+        if (id == null)
         {
-            this.repository = repository;
+            return NotFound();
         }
 
-        // GET: Movies
-        public IActionResult Index()
+        var movie = await this.movieRepository.GetByIdAsync(id.Value);
+        if (movie == null)
         {
-            return View(this.repository.GetMovies());
+            return NotFound();
         }
 
-        // GET: Movies/Details/5
-        public IActionResult Details(int? id)
+        return View(movie);
+    }
+
+    // GET: Movie/Create
+    public IActionResult Create()
+    {
+        return View();
+    }
+
+    // POST: Products/Create
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Create(Movie movie)
+    {
+        if (ModelState.IsValid)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var movie = this.repository.GetMovie(id.Value);
-            if (movie == null)
-            {
-                return NotFound();
-            }
-
-            return View(movie);
-        }
-
-        // GET: Movies/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: Movies/Create        
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Movie movie)
-        {
-            if (ModelState.IsValid)
-            {
-                this.repository.AddMovie(movie);
-                await this.repository.SaveAllAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(movie);
-        }
-
-        // GET: Movies/Edit/5
-        public IActionResult Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var movie = this.repository.GetMovie(id.Value);
-            if (movie == null)
-            {
-                return NotFound();
-            }
-            return View(movie);
-        }
-
-        // POST: Movies/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Movie movie)
-        {
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    this.repository.UpdateMovie(movie);
-                    await this.repository.SaveAllAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!this.repository.MovieExists(movie.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(movie);
-        }
-
-        // GET: Movies/Delete/5
-        public IActionResult Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var movie = this.repository.GetMovie(id.Value);                
-            if (movie == null)
-            {
-                return NotFound();
-            }
-
-            return View(movie);
-        }
-
-        // POST: Movies/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var movie = this.repository.GetMovie(id);
-            this.repository.RemoveMovie(movie);
-            await this.repository.SaveAllAsync();
+            // TODO: Pending to change to: this.User.Identity.Name
+            movie.User = await this.userHelper.GetUserByEmailAsync("djkevinruiz@gmail.com");
+            await this.movieRepository.CreateAsync(movie);
             return RedirectToAction(nameof(Index));
         }
-               
+
+        return View(movie);
+    }
+
+    // GET: Products/Edit/5
+    public async Task<IActionResult> Edit(int? id)
+    {
+        if (id == null)
+        {
+            return NotFound();
+        }
+
+        var movie = await this.movieRepository.GetByIdAsync(id.Value);
+        if (movie == null)
+        {
+            return NotFound();
+        }
+
+        return View(movie);
+    }
+
+    // POST: Movies/Edit/5
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Edit(Movie movie)
+    {
+        if (ModelState.IsValid)
+        {
+            try
+            {
+                // TODO: Pending to change to: this.User.Identity.Name
+                movie.User = await this.userHelper.GetUserByEmailAsync("djkevinruiz@gmail.com");
+                await this.movieRepository.UpdateAsync(movie);
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!await this.movieRepository.ExistAsync(movie.Id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+            return RedirectToAction(nameof(Index));
+        }
+
+        return View(movie);
+    }
+
+    // GET: Movies/Delete/5
+    public async Task<IActionResult> Delete(int? id)
+    {
+        if (id == null)
+        {
+            return NotFound();
+        }
+
+        var movie = await this.movieRepository.GetByIdAsync(id.Value);
+        if (movie == null)
+        {
+            return NotFound();
+        }
+
+        return View(movie);
+    }
+
+    // POST: Movies/Delete/5
+    [HttpPost, ActionName("Delete")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteConfirmed(int id)
+    {
+        var movie = await this.movieRepository.GetByIdAsync(id);
+        await this.movieRepository.DeleteAsync(movie);
+        return RedirectToAction(nameof(Index));
     }
 }
+
+

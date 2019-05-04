@@ -1,5 +1,6 @@
 ﻿using CinemaExpress.Web.Data;
 using CinemaExpress.Web.Data.Entities;
+using CinemaExpress.Web.Helpers;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Linq;
@@ -8,13 +9,13 @@ using System.Threading.Tasks;
 public class SeedDb
 {
     private readonly DataContext context;
-    private readonly UserManager<User> userManager;
+    private readonly IUserHelper userHelper;
     private Random random;
 
-    public SeedDb(DataContext context, UserManager<User> userManager)
+    public SeedDb(DataContext context, IUserHelper userHelper)
     {
         this.context = context;
-        this.userManager = userManager;
+        this.userHelper = userHelper;        
         this.random = new Random();
     }
 
@@ -22,7 +23,7 @@ public class SeedDb
     {
         await this.context.Database.EnsureCreatedAsync();
 
-        var user = await this.userManager.FindByEmailAsync("djkevinruiz@gmail.com");
+        var user = await this.userHelper.GetUserByEmailAsync("djkevinruiz@gmail.com");
         if (user == null)
         {
             user = new User
@@ -34,7 +35,7 @@ public class SeedDb
                 PhoneNumber = "8550-4584"
             };
 
-            var result = await this.userManager.CreateAsync(user, "IT.entrycontrol.456");
+            var result = await this.userHelper.AddUserAsync(user, "IT.entrycontrol.456");
             if (result != IdentityResult.Success)
             {
                 throw new InvalidOperationException("Could not create the user in seeder");

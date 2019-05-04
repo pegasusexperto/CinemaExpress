@@ -2,7 +2,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 
-public class Movie
+public class Movie : IEntity
 {
     public int Id { get; set; }
 
